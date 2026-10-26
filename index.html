@@ -2,1152 +2,922 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QuizLab | Interactive Quiz Platform</title>
-  <style>
-    :root {
-      --primary: #7357f6;
-      --dark: #15172e;
-      --muted: #777b91;
-      --background: #f5f6fc;
-      --border: #e7e8f2;
-      --green: #159a70;
-      --red: #e24d65;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Inter, "Segoe UI", Arial, sans-serif;
-      color: var(--dark);
-      background: var(--background);
-    }
-
-    button, input, select { font: inherit; }
-
-    button { cursor: pointer; }
-
-    .hidden { display: none !important; }
-
-    header {
-      background: white;
-      border-bottom: 1px solid var(--border);
-      padding: 17px max(5%, calc((100% - 1100px)/2));
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 15px;
-    }
-
-    .logo {
-      font-size: 25px;
-      font-weight: 900;
-      color: var(--primary);
-    }
-
-    .logo span { color: var(--dark); }
-
-    .nav-button {
-      border: 1px solid var(--border);
-      background: white;
-      border-radius: 10px;
-      padding: 10px 15px;
-      font-weight: 700;
-    }
-
-    main {
-      max-width: 1100px;
-      margin: auto;
-      padding: 35px 20px 80px;
-    }
-
-    .hero {
-      background: linear-gradient(125deg, #6247e8, #9476ff);
-      color: white;
-      padding: 45px;
-      border-radius: 24px;
-      margin-bottom: 30px;
-    }
-
-    .hero h1 {
-      font-size: clamp(29px, 5vw, 46px);
-      margin: 12px 0;
-    }
-
-    .hero p {
-      opacity: .92;
-      line-height: 1.7;
-      max-width: 650px;
-    }
-
-    .eyebrow {
-      font-size: 12px;
-      letter-spacing: 2px;
-      font-weight: 800;
-      text-transform: uppercase;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-    }
-
-    .card {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 28px;
-      box-shadow: 0 8px 30px #22204408;
-    }
-
-    .card h2 { margin-top: 0; }
-
-    .card p {
-      color: var(--muted);
-      line-height: 1.7;
-    }
-
-    .emoji {
-      font-size: 34px;
-      margin-bottom: 15px;
-    }
-
-    .btn {
-      border: none;
-      border-radius: 12px;
-      padding: 13px 20px;
-      font-weight: 800;
-      background: var(--primary);
-      color: white;
-      transition: .2s;
-    }
-
-    .btn:hover { filter: brightness(.93); }
-
-    .btn:disabled {
-      opacity: .45;
-      cursor: not-allowed;
-    }
-
-    .btn-outline {
-      background: white;
-      color: var(--dark);
-      border: 1px solid var(--border);
-    }
-
-    .btn-red { background: var(--red); }
-
-    .section-title {
-      margin: 35px 0 18px;
-      font-size: 24px;
-    }
-
-    .setup {
-      max-width: 650px;
-      margin: 20px auto;
-    }
-
-    label {
-      display: block;
-      font-weight: 700;
-      margin: 17px 0 8px;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 14px;
-      border-radius: 11px;
-      border: 1px solid #d9dbea;
-      background: white;
-    }
-
-    .rules {
-      background: #f2efff;
-      border-radius: 12px;
-      padding: 16px;
-      margin: 22px 0;
-      line-height: 1.9;
-    }
-
-    .quiz-layout {
-      display: grid;
-      grid-template-columns: 1fr 260px;
-      gap: 22px;
-      align-items: start;
-    }
-
-    .quiz-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      align-items: center;
-    }
-
-    .timer {
-      background: #f1edff;
-      color: var(--primary);
-      border-radius: 12px;
-      padding: 12px 16px;
-      font-weight: 900;
-      font-size: 22px;
-      min-width: 82px;
-      text-align: center;
-    }
-
-    .timer.danger {
-      background: #ffebee;
-      color: var(--red);
-    }
-
-    .progress {
-      height: 9px;
-      background: #e9e9f4;
-      border-radius: 10px;
-      overflow: hidden;
-      margin: 23px 0 30px;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: var(--primary);
-      transition: width .25s;
-    }
-
-    .question {
-      font-size: 25px;
-      line-height: 1.45;
-      margin-bottom: 25px;
-    }
-
-    .option {
-      width: 100%;
-      text-align: left;
-      padding: 17px;
-      border: 2px solid var(--border);
-      border-radius: 13px;
-      margin-bottom: 12px;
-      background: white;
-      font-weight: 600;
-    }
-
-    .option:hover { border-color: #b4a5ff; }
-
-    .option.selected {
-      border-color: var(--primary);
-      background: #f3efff;
-      color: #5439d5;
-    }
-
-    .quiz-actions {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      margin-top: 30px;
-    }
-
-    .navigator {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-      margin-top: 18px;
-    }
-
-    .nav-number {
-      border: 1px solid var(--border);
-      background: #f6f6fb;
-      border-radius: 9px;
-      height: 39px;
-      font-weight: 700;
-    }
-
-    .nav-number.current {
-      background: var(--primary);
-      color: white;
-    }
-
-    .nav-number.answered {
-      background: #d9f6eb;
-      color: #0d8058;
-    }
-
-    .nav-number.locked {
-      background: #fce5e9;
-      color: #b23a52;
-    }
-
-    .score {
-      font-size: 66px;
-      font-weight: 900;
-      color: var(--primary);
-      margin: 15px 0;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-      margin: 25px 0;
-    }
-
-    .stat {
-      background: #f7f7fc;
-      padding: 20px;
-      border-radius: 14px;
-      text-align: center;
-    }
-
-    .stat strong {
-      display: block;
-      font-size: 27px;
-      margin-bottom: 6px;
-    }
-
-    .review-item {
-      padding: 20px 0;
-      border-bottom: 1px solid var(--border);
-      line-height: 1.7;
-    }
-
-    .correct { color: var(--green); }
-    .wrong { color: var(--red); }
-
-    .table-wrap { overflow-x: auto; }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 530px;
-    }
-
-    th, td {
-      text-align: left;
-      padding: 15px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    th { color: var(--muted); }
-
-    .muted { color: var(--muted); }
-
-    .footer {
-      text-align: center;
-      padding: 30px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    @media(max-width: 760px) {
-      .grid, .quiz-layout { grid-template-columns: 1fr; }
-      .hero { padding: 28px; }
-      .card { padding: 21px; }
-      .question { font-size: 21px; }
-      .stats { gap: 8px; }
-      .stat { padding: 13px 6px; }
-      .stat strong { font-size: 22px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuizLab | Challenge Your Knowledge</title>
+<style>
+:root {
+  --purple:#7357f6;
+  --purple-dark:#5134ce;
+  --ink:#20233e;
+  --muted:#788098;
+  --line:#e7e9f4;
+  --bg:#f6f7fc;
+  --green:#10976e;
+  --red:#e44960;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:Inter,"Segoe UI",Arial,sans-serif;
+}
+button,input,select { font:inherit; }
+button { cursor:pointer; }
+.hidden { display:none!important; }
+header {
+  background:#fff;
+  border-bottom:1px solid var(--line);
+  padding:17px max(5%,calc((100% - 1100px)/2));
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.logo {
+  font-size:26px;
+  font-weight:900;
+  color:var(--purple);
+}
+.logo span { color:var(--ink); }
+main {
+  max-width:1100px;
+  margin:auto;
+  padding:32px 20px 80px;
+}
+.hero {
+  padding:52px;
+  border-radius:26px;
+  color:#fff;
+  background:
+    radial-gradient(circle at 90% 10%,#a895ff 0%,transparent 38%),
+    linear-gradient(125deg,#5539d7,#886bff);
+  box-shadow:0 18px 45px #6449d52b;
+}
+.hero h1 {
+  font-size:clamp(30px,5vw,52px);
+  margin:12px 0;
+  max-width:670px;
+}
+.hero p {
+  line-height:1.8;
+  max-width:650px;
+  opacity:.94;
+}
+.eyebrow {
+  font-size:12px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  font-weight:900;
+}
+.grid {
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:20px;
+}
+.card {
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:28px;
+  box-shadow:0 10px 32px #25204408;
+}
+.card p {
+  color:var(--muted);
+  line-height:1.7;
+}
+.emoji {
+  font-size:38px;
+  margin-bottom:15px;
+}
+.btn {
+  border:0;
+  padding:13px 20px;
+  border-radius:12px;
+  background:var(--purple);
+  color:#fff;
+  font-weight:800;
+  transition:.2s;
+}
+.btn:hover { background:var(--purple-dark); }
+.btn:disabled {
+  opacity:.4;
+  cursor:not-allowed;
+}
+.btn-outline {
+  background:#fff;
+  color:var(--ink);
+  border:1px solid var(--line);
+}
+.btn-outline:hover { background:#f3f0ff; }
+.btn-red { background:var(--red); }
+.section-title {
+  font-size:25px;
+  margin:34px 0 18px;
+}
+.setup {
+  max-width:640px;
+  margin:20px auto;
+}
+label {
+  display:block;
+  margin:18px 0 8px;
+  font-weight:800;
+}
+input,select {
+  width:100%;
+  border:1px solid #d9ddeb;
+  border-radius:12px;
+  padding:14px;
+  background:#fff;
+}
+.rules {
+  margin:22px 0;
+  padding:19px;
+  border-radius:14px;
+  background:#f1eeff;
+  line-height:2;
+}
+.quiz-layout {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 270px;
+  gap:20px;
+  align-items:start;
+}
+.quiz-top {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+}
+.timer {
+  background:#f0ecff;
+  color:var(--purple);
+  padding:13px 17px;
+  border-radius:13px;
+  font-weight:900;
+  font-size:23px;
+  min-width:95px;
+  text-align:center;
+}
+.timer.danger {
+  background:#ffedf0;
+  color:var(--red);
+}
+.progress {
+  background:#e9eaf5;
+  height:10px;
+  border-radius:20px;
+  overflow:hidden;
+  margin:24px 0 30px;
+}
+.progress-fill {
+  height:100%;
+  background:linear-gradient(90deg,#7357f6,#ac8dff);
+  transition:width .25s;
+}
+.question {
+  font-size:25px;
+  line-height:1.5;
+  margin-bottom:24px;
+}
+.option {
+  width:100%;
+  background:#fff;
+  text-align:left;
+  padding:17px;
+  border:2px solid var(--line);
+  border-radius:13px;
+  margin-bottom:12px;
+  font-weight:650;
+  transition:.15s;
+}
+.option:hover { border-color:#b3a2ff; }
+.option.selected {
+  background:#f2eeff;
+  border-color:var(--purple);
+  color:#5437ce;
+}
+.quiz-actions {
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:25px;
+}
+.navigator {
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+  margin:20px 0;
+}
+.nav-number {
+  height:40px;
+  border:1px solid var(--line);
+  background:#f7f7fc;
+  border-radius:9px;
+  font-weight:800;
+}
+.nav-number.current {
+  background:var(--purple);
+  color:#fff;
+}
+.nav-number.answered {
+  background:#d8f7eb;
+  color:#08794e;
+}
+.nav-number.locked {
+  background:#fce8ec;
+  color:#ad344a;
+}
+.score {
+  font-size:65px;
+  color:var(--purple);
+  font-weight:900;
+  margin:18px 0;
+}
+.stats {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin:25px 0;
+}
+.stat {
+  background:#f6f7fc;
+  border-radius:14px;
+  padding:19px;
+  text-align:center;
+}
+.stat strong {
+  display:block;
+  font-size:28px;
+  margin-bottom:6px;
+}
+.correct { color:var(--green); }
+.wrong { color:var(--red); }
+.muted { color:var(--muted); }
+.review-item {
+  padding:20px 0;
+  border-bottom:1px solid var(--line);
+  line-height:1.7;
+}
+.table-wrap { overflow-x:auto; }
+table {
+  width:100%;
+  border-collapse:collapse;
+  min-width:540px;
+}
+th,td {
+  text-align:left;
+  padding:15px;
+  border-bottom:1px solid var(--line);
+}
+th { color:var(--muted); }
+footer {
+  text-align:center;
+  padding:28px;
+  color:var(--muted);
+  font-size:13px;
+}
+@media(max-width:760px) {
+  .grid,.quiz-layout { grid-template-columns:1fr; }
+  .hero { padding:30px; }
+  .card { padding:20px; }
+  .question { font-size:21px; }
+  .stats { gap:7px; }
+  .stat { padding:14px 6px; }
+  .stat strong { font-size:22px; }
+}
+</style>
 </head>
 <body>
 
 <header>
   <div class="logo">Quiz<span>Lab.</span></div>
-  <button class="nav-button" onclick="showHome()">Home</button>
+  <button class="btn btn-outline" onclick="goHome()">Home</button>
 </header>
 
 <main>
+<section id="home">
+  <div class="hero">
+    <div class="eyebrow">IIT Indore Programming Club Project</div>
+    <h1>Learn. Compete. Level Up.</h1>
+    <p>
+      Take timed quizzes, explore different difficulty levels,
+      challenge yourself with randomized questions,
+      and climb your local leaderboard.
+    </p>
+    <button class="btn btn-outline" onclick="showLeaderboard()">
+      🏆 View Leaderboard
+    </button>
+  </div>
 
-  <!-- HOME -->
-  <section id="home">
-    <div class="hero">
-      <div class="eyebrow">Interactive Learning Platform</div>
-      <h1>Challenge your knowledge.</h1>
+  <h2 class="section-title">Choose Your Challenge</h2>
+
+  <div class="grid">
+    <div class="card">
+      <div class="emoji">💻</div>
+      <h2>Programming Basics</h2>
       <p>
-        Test yourself with timed quizzes, three difficulty levels,
-        randomized questions, competitive scoring and a leaderboard.
+        HTML, CSS, JavaScript, algorithms,
+        data structures and computer science.
       </p>
-      <button class="btn btn-outline" onclick="showLeaderboard()">
-        View Leaderboard
+      <button class="btn" onclick="openSetup('programming')">
+        Start Quiz →
       </button>
     </div>
 
-    <h2 class="section-title">Explore Quizzes</h2>
-
-    <div class="grid">
-      <div class="card">
-        <div class="emoji">💻</div>
-        <h2>Programming Basics</h2>
-        <p>
-          Explore programming fundamentals, algorithms,
-          JavaScript, HTML, CSS and computer science.
-        </p>
-        <button class="btn" onclick="openSetup('programming')">
-          Start Quiz →
-        </button>
-      </div>
-
-      <div class="card">
-        <div class="emoji">🧠</div>
-        <h2>General Knowledge</h2>
-        <p>
-          Challenge your knowledge of science, geography,
-          history, technology and the world.
-        </p>
-        <button class="btn" onclick="openSetup('general')">
-          Start Quiz →
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <!-- SETUP -->
-  <section id="setup" class="hidden">
-    <div class="card setup">
-      <h2 id="setupTitle">Quiz Setup</h2>
-      <p>Configure your quiz before starting.</p>
-
-      <label for="playerName">Your Name</label>
-      <input id="playerName" maxlength="30"
-             placeholder="Enter your name">
-
-      <label for="difficulty">Difficulty Level</label>
-      <select id="difficulty">
-        <option value="easy">Easy</option>
-        <option value="medium">Medium</option>
-        <option value="hard">Hard</option>
-      </select>
-
-      <div class="rules">
-        <strong>Quiz Rules</strong><br>
-        • 10 questions per quiz<br>
-        • 20 seconds per question<br>
-        • Correct answer: +4 marks<br>
-        • Wrong answer: -1 mark<br>
-        • Unanswered: 0 marks<br>
-        • Questions and options are randomized<br>
-        • When time expires, the question is locked
-          and the quiz moves forward automatically
-      </div>
-
-      <button class="btn" onclick="startQuiz()">Start Now →</button>
-      <button class="btn btn-outline" onclick="showHome()">Cancel</button>
-    </div>
-  </section>
-
-  <!-- QUIZ -->
-  <section id="quiz" class="hidden">
-    <div class="quiz-layout">
-      <div class="card">
-        <div class="quiz-top">
-          <div>
-            <div class="eyebrow muted" id="quizCategory"></div>
-            <h3 id="questionCount"></h3>
-          </div>
-          <div class="timer" id="timer">00:20</div>
-        </div>
-
-        <div class="progress">
-          <div class="progress-fill" id="progressFill"></div>
-        </div>
-
-        <h2 class="question" id="questionText"></h2>
-        <div id="options"></div>
-
-        <div class="quiz-actions">
-          <button class="btn btn-outline" id="prevBtn"
-                  onclick="previousQuestion()">← Previous</button>
-          <button class="btn" id="nextBtn"
-                  onclick="nextQuestion()">Next →</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h3>Question Navigator</h3>
-        <p class="muted">Green = answered, red = time expired.</p>
-        <div class="navigator" id="navigator"></div>
-
-        <p class="muted" id="answeredCount"></p>
-
-        <button class="btn btn-red"
-                style="width:100%;margin-top:18px"
-                onclick="confirmSubmit()">
-          Submit Quiz
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <!-- RESULTS -->
-  <section id="results" class="hidden">
     <div class="card">
-      <div class="eyebrow muted">Quiz Completed</div>
-      <h1>Great effort, <span id="resultName"></span>!</h1>
-      <p>Your final score is:</p>
-
-      <div class="score" id="finalScore"></div>
-      <p id="resultDetails"></p>
-
-      <div class="stats">
-        <div class="stat">
-          <strong class="correct" id="correctCount">0</strong>
-          Correct
-        </div>
-        <div class="stat">
-          <strong class="wrong" id="wrongCount">0</strong>
-          Incorrect
-        </div>
-        <div class="stat">
-          <strong id="skippedCount">0</strong>
-          Unanswered
-        </div>
-      </div>
-
-      <button class="btn" onclick="restartQuiz()">Try Again</button>
-      <button class="btn btn-outline" onclick="showLeaderboard()">
-        Leaderboard
-      </button>
-      <button class="btn btn-outline" onclick="showHome()">
-        Home
-      </button>
-    </div>
-
-    <h2 class="section-title">Review Your Answers</h2>
-    <div class="card" id="reviewContainer"></div>
-  </section>
-
-  <!-- LEADERBOARD -->
-  <section id="leaderboard" class="hidden">
-    <div class="card">
-      <h1>🏆 Leaderboard</h1>
-      <p class="muted">
-        Scores saved locally in this browser.
+      <div class="emoji">🌍</div>
+      <h2>General Knowledge</h2>
+      <p>
+        Science, geography, history, mathematics
+        and fascinating facts about our world.
       </p>
+      <button class="btn" onclick="openSetup('general')">
+        Start Quiz →
+      </button>
+    </div>
+  </div>
+</section>
 
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Rank</th>
-              <th>Name</th>
-              <th>Quiz</th>
-              <th>Level</th>
-              <th>Score</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody id="leaderboardBody"></tbody>
-        </table>
+<section id="setup" class="hidden">
+  <div class="card setup">
+    <div class="eyebrow muted">Quiz Configuration</div>
+    <h1 id="setupTitle"></h1>
+    <p>Choose your difficulty and get ready!</p>
+
+    <label for="playerName">Your Name</label>
+    <input id="playerName" maxlength="30"
+           placeholder="Enter your name">
+
+    <label for="difficulty">Difficulty Level</label>
+    <select id="difficulty">
+      <option value="easy">Easy</option>
+      <option value="medium">Medium</option>
+      <option value="hard">Hard</option>
+    </select>
+
+    <div class="rules">
+      <strong>📋 Quiz Rules</strong><br>
+      10 questions per attempt<br>
+      20 seconds for every question<br>
+      Correct: +4 marks<br>
+      Incorrect: −1 mark<br>
+      Unanswered: 0 marks<br>
+      Questions and options are randomized<br>
+      Expired questions are locked automatically
+    </div>
+
+    <button class="btn" onclick="startQuiz()">Start Now →</button>
+    <button class="btn btn-outline" onclick="goHome()">Cancel</button>
+  </div>
+</section>
+
+<section id="quiz" class="hidden">
+  <div class="quiz-layout">
+    <div class="card">
+      <div class="quiz-top">
+        <div>
+          <div class="eyebrow muted" id="quizCategory"></div>
+          <h3 id="questionCount"></h3>
+        </div>
+        <div class="timer" id="timer">00:20</div>
       </div>
 
-      <button class="btn" style="margin-top:25px"
-              onclick="showHome()">Back Home</button>
-    </div>
-  </section>
+      <div class="progress">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
 
+      <h2 class="question" id="questionText"></h2>
+      <div id="options"></div>
+
+      <div class="quiz-actions">
+        <button class="btn btn-outline" id="prevBtn"
+                onclick="previousQuestion()">← Previous</button>
+        <button class="btn" id="nextBtn"
+                onclick="nextQuestion()">Next →</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Question Navigator</h3>
+      <p class="muted">Green: answered | Red: locked</p>
+      <div class="navigator" id="navigator"></div>
+      <p class="muted" id="answeredCount"></p>
+
+      <button class="btn btn-red"
+              style="width:100%;margin-top:15px"
+              onclick="confirmSubmit()">
+        Submit Quiz
+      </button>
+    </div>
+  </div>
+</section>
+
+<section id="results" class="hidden">
+  <div class="card">
+    <div class="eyebrow muted">Quiz Completed</div>
+    <h1>Well played, <span id="resultName"></span>!</h1>
+    <p>Your final score:</p>
+    <div class="score" id="finalScore"></div>
+    <p id="resultDetails"></p>
+
+    <div class="stats">
+      <div class="stat">
+        <strong class="correct" id="correctCount">0</strong>
+        Correct
+      </div>
+      <div class="stat">
+        <strong class="wrong" id="wrongCount">0</strong>
+        Incorrect
+      </div>
+      <div class="stat">
+        <strong id="skippedCount">0</strong>
+        Unanswered
+      </div>
+    </div>
+
+    <button class="btn" onclick="restartQuiz()">Try Again</button>
+    <button class="btn btn-outline" onclick="showLeaderboard()">
+      Leaderboard
+    </button>
+    <button class="btn btn-outline" onclick="goHome()">Home</button>
+  </div>
+
+  <h2 class="section-title">Answer Review</h2>
+  <div class="card" id="reviewContainer"></div>
+</section>
+
+<section id="leaderboard" class="hidden">
+  <div class="card">
+    <h1>🏆 Leaderboard</h1>
+    <p class="muted">
+      Scores are saved in your browser using localStorage.
+    </p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Player</th>
+            <th>Quiz</th>
+            <th>Level</th>
+            <th>Score</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="leaderboardBody"></tbody>
+      </table>
+    </div>
+    <button class="btn" style="margin-top:25px"
+            onclick="goHome()">Back Home</button>
+  </div>
+</section>
 </main>
 
-<div class="footer">
-  QuizLab © 2026 | IIT Indore Programming Club Project
-</div>
+<footer>
+  QuizLab © 2026 | Built for IIT Indore Programming Club
+</footer>
 
 <script>
-  // Question format:
-  // [question, correct answer, wrong answer 1,
-  //  wrong answer 2, wrong answer 3]
+const BANK = {
+  programming: {
+    easy: [
+      ["What does HTML stand for?","HyperText Markup Language","HighText Machine Language","HyperTool Markup Language","Home Tool Markup Language"],
+      ["Which language styles web pages?","CSS","Python","SQL","C"],
+      ["Which symbol starts a JavaScript single-line comment?","//","##","<!--","**"],
+      ["Which tag creates a paragraph?","<p>","<h1>","<div>","<img>"],
+      ["What does CPU stand for?","Central Processing Unit","Computer Personal Unit","Central Program Utility","Control Processing User"],
+      ["Which data type stores true or false?","Boolean","String","Array","Float"],
+      ["Which HTML tag creates a hyperlink?","<a>","<url>","<linker>","<href>"],
+      ["Which CSS property changes text color?","color","font-style","background","text-size"],
+      ["Which JavaScript operator checks strict equality?","===","=","!=","=>"],
+      ["Which method logs a message to the browser console?","console.log()","print.console()","write.log()","show()"]
+    ],
+    medium: [
+      ["What is the time complexity of binary search?","O(log n)","O(n)","O(n²)","O(1)"],
+      ["Which JavaScript method adds an item to an array's end?","push()","pop()","shift()","slice()"],
+      ["What does DOM stand for?","Document Object Model","Data Object Management","Document Order Method","Digital Object Model"],
+      ["Which CSS layout system is two-dimensional?","Grid","Flexbox","Float","Inline"],
+      ["Which HTTP method typically retrieves data?","GET","POST","DELETE","PATCH"],
+      ["Which data structure follows FIFO?","Queue","Stack","Tree","Graph"],
+      ["What does JSON stand for?","JavaScript Object Notation","Java Source Object Network","JavaScript Ordered Nodes","Joint Standard Object Notation"],
+      ["Which keyword declares a block-scoped variable?","let","var","global","define"],
+      ["Which sorting algorithm uses divide and conquer?","Merge Sort","Bubble Sort","Selection Sort","Insertion Sort"],
+      ["What does API stand for?","Application Programming Interface","Advanced Program Internet","Application Process Input","Automatic Programming Instruction"]
+    ],
+    hard: [
+      ["What is the worst-case time complexity of quicksort?","O(n²)","O(n log n)","O(log n)","O(1)"],
+      ["Which algorithm finds shortest paths with nonnegative edge weights?","Dijkstra's algorithm","Kruskal's algorithm","Prim's algorithm","DFS"],
+      ["What is the time complexity of building a binary heap?","O(n)","O(n log n)","O(n²)","O(log n)"],
+      ["Which traversal of a BST returns sorted keys?","Inorder","Preorder","Postorder","Level order"],
+      ["What is the average lookup complexity of a hash table?","O(1)","O(n)","O(log n)","O(n²)"],
+      ["Which technique is used by the classic 0/1 knapsack solution?","Dynamic Programming","Binary Search","Topological Sorting","Linear Regression"],
+      ["What is required for binary search?","Sorted search space","Unique elements","Prime array length","Linked-list storage"],
+      ["Which algorithm can detect reachable negative-weight cycles?","Bellman-Ford","Dijkstra","Prim","Binary Search"],
+      ["What is the worst-case auxiliary space of recursive DFS?","O(V)","O(1)","O(log V)","O(V²)"],
+      ["What is the time complexity of Floyd-Warshall?","O(V³)","O(V²)","O(E log V)","O(log V)"]
+    ]
+  },
+  general: {
+    easy: [
+      ["What is the capital of India?","New Delhi","Mumbai","Hyderabad","Chennai"],
+      ["Which planet is known as the Red Planet?","Mars","Venus","Jupiter","Mercury"],
+      ["How many days are in a leap year?","366","365","364","360"],
+      ["What is the chemical formula of water?","H2O","CO2","O2","NaCl"],
+      ["Which is the largest ocean?","Pacific Ocean","Atlantic Ocean","Indian Ocean","Arctic Ocean"],
+      ["Who wrote India's national anthem?","Rabindranath Tagore","Mahatma Gandhi","Jawaharlal Nehru","Sarojini Naidu"],
+      ["How many continents are there?","7","5","6","8"],
+      ["Which gas do plants absorb during photosynthesis?","Carbon dioxide","Oxygen","Helium","Hydrogen"],
+      ["Which animal is called the ship of the desert?","Camel","Horse","Elephant","Yak"],
+      ["What is the square root of 144?","12","14","11","16"]
+    ],
+    medium: [
+      ["Which element has atomic number 6?","Carbon","Oxygen","Nitrogen","Silicon"],
+      ["What is the SI unit of force?","Newton","Joule","Watt","Pascal"],
+      ["Who developed general relativity?","Albert Einstein","Isaac Newton","Galileo Galilei","Nikola Tesla"],
+      ["Which organ produces insulin?","Pancreas","Liver","Kidney","Heart"],
+      ["Which is the largest planet in our solar system?","Jupiter","Saturn","Neptune","Earth"],
+      ["What is the currency of Japan?","Yen","Won","Yuan","Ringgit"],
+      ["Which layer absorbs most harmful solar UV radiation?","Ozone layer","Troposphere","Ionosphere","Exosphere"],
+      ["Which country hosted the 2016 Summer Olympics?","Brazil","Japan","China","United Kingdom"],
+      ["What is the approximate speed of light in vacuum?","300,000 km/s","30,000 km/s","3,000 km/s","3,000,000 km/s"],
+      ["Which blood cells fight infection?","White blood cells","Red blood cells","Platelets","Plasma"]
+    ],
+    hard: [
+      ["What is the approximate value of Avogadro's constant?","6.022 × 10²³","9.81 × 10²³","3.14 × 10²³","1.602 × 10²³"],
+      ["Who proposed the uncertainty principle?","Werner Heisenberg","Niels Bohr","Erwin Schrödinger","Max Planck"],
+      ["What is the chemical symbol for tungsten?","W","Tg","Tu","Ts"],
+      ["Which treaty formally ended World War I between Germany and the Allied Powers?","Treaty of Versailles","Treaty of Paris","Treaty of Rome","Treaty of Vienna"],
+      ["Which is the largest moon in our solar system?","Ganymede","Titan","Europa","Callisto"],
+      ["What is the pH of pure water at 25°C?","7","5","8","10"],
+      ["Which law relates pressure and volume at constant temperature?","Boyle's law","Charles's law","Ohm's law","Faraday's law"],
+      ["What is the SI unit of magnetic flux?","Weber","Tesla","Henry","Ampere"],
+      ["Which part of the brain coordinates balance?","Cerebellum","Medulla","Thalamus","Hypothalamus"],
+      ["Which constant is approximately 2.71828?","Euler's number e","Pi","Golden ratio","Square root of 2"]
+    ]
+  }
+};
 
-  const BANK = {
-    programming: {
-      easy: [
-        ["What does HTML stand for?",
-         "HyperText Markup Language",
-         "HighText Machine Language",
-         "HyperTool Markup Language",
-         "Home Tool Markup Language"],
-        ["Which language styles web pages?",
-         "CSS", "Python", "SQL", "C"],
-        ["Which symbol starts a JavaScript single-line comment?",
-         "//", "##", "<!--", "**"],
-        ["Which tag creates a paragraph?",
-         "<p>", "<h1>", "<div>", "<img>"],
-        ["What does CPU stand for?",
-         "Central Processing Unit",
-         "Computer Personal Unit",
-         "Central Program Utility",
-         "Control Processing User"],
-        ["Which data type stores true or false?",
-         "Boolean", "String", "Array", "Float"],
-        ["Which HTML tag creates a link?",
-         "<a>", "<linker>", "<url>", "<href>"],
-        ["Which CSS property changes text color?",
-         "color", "font-style", "background", "text-size"],
-        ["Which operator checks strict equality in JavaScript?",
-         "===", "=", "!=", "=>"],
-        ["Which method prints to the browser console?",
-         "console.log()", "print.console()", "write.log()", "show()"]
-      ],
-      medium: [
-        ["What is the time complexity of binary search?",
-         "O(log n)", "O(n)", "O(n²)", "O(1)"],
-        ["Which JavaScript method adds an item to an array's end?",
-         "push()", "pop()", "shift()", "slice()"],
-        ["What does DOM stand for?",
-         "Document Object Model",
-         "Data Object Management",
-         "Document Order Method",
-         "Digital Object Model"],
-        ["Which CSS layout system is two-dimensional?",
-         "Grid", "Flexbox", "Float", "Inline"],
-        ["Which HTTP method usually retrieves data?",
-         "GET", "POST", "DELETE", "PATCH"],
-        ["Which data structure follows FIFO?",
-         "Queue", "Stack", "Tree", "Graph"],
-        ["What does JSON stand for?",
-         "JavaScript Object Notation",
-         "Java Source Object Network",
-         "JavaScript Ordered Nodes",
-         "Joint Standard Object Notation"],
-        ["Which keyword declares a block-scoped variable?",
-         "let", "var", "global", "define"],
-        ["Which sorting algorithm typically uses divide and conquer?",
-         "Merge Sort", "Bubble Sort", "Selection Sort", "Insertion Sort"],
-        ["What does API stand for?",
-         "Application Programming Interface",
-         "Advanced Program Internet",
-         "Application Process Input",
-         "Automatic Programming Instruction"]
-      ],
-      hard: [
-        ["What is the worst-case time complexity of quicksort?",
-         "O(n²)", "O(n log n)", "O(log n)", "O(1)"],
-        ["Which algorithm finds shortest paths with nonnegative edge weights?",
-         "Dijkstra's algorithm", "Kruskal's algorithm",
-         "Prim's algorithm", "DFS"],
-        ["What is the time complexity of building a binary heap?",
-         "O(n)", "O(n log n)", "O(n²)", "O(log n)"],
-        ["Which traversal of a BST returns sorted keys?",
-         "Inorder", "Preorder", "Postorder", "Level order"],
-        ["What is the average lookup complexity of a hash table?",
-         "O(1)", "O(n)", "O(log n)", "O(n²)"],
-        ["Which technique is used by the 0/1 knapsack DP solution?",
-         "Dynamic Programming", "Binary Search",
-         "Topological Sorting", "Linear Regression"],
-        ["Which property is required for binary search?",
-         "Sorted search space", "Unique elements",
-         "Prime array length", "Linked-list storage"],
-        ["Which graph algorithm detects negative cycles?",
-         "Bellman-Ford", "Dijkstra", "Prim", "Binary Search"],
-        ["What is the space complexity of recursive DFS in the worst case?",
-         "O(V)", "O(1)", "O(log V)", "O(V²)"],
-        ["What is the time complexity of Floyd-Warshall?",
-         "O(V³)", "O(V²)", "O(E log V)", "O(log V)"]
-      ]
-    },
+const NAMES = {
+  programming:"Programming Basics",
+  general:"General Knowledge"
+};
 
-    general: {
-      easy: [
-        ["What is the capital of India?",
-         "New Delhi", "Mumbai", "Hyderabad", "Chennai"],
-        ["Which planet is known as the Red Planet?",
-         "Mars", "Venus", "Jupiter", "Mercury"],
-        ["How many days are in a leap year?",
-         "366", "365", "364", "360"],
-        ["What is the chemical formula of water?",
-         "H2O", "CO2", "O2", "NaCl"],
-        ["Which is the largest ocean?",
-         "Pacific Ocean", "Atlantic Ocean",
-         "Indian Ocean", "Arctic Ocean"],
-        ["Who wrote the Indian national anthem?",
-         "Rabindranath Tagore", "Mahatma Gandhi",
-         "Jawaharlal Nehru", "Sarojini Naidu"],
-        ["How many continents are there?",
-         "7", "5", "6", "8"],
-        ["Which gas do plants absorb for photosynthesis?",
-         "Carbon dioxide", "Oxygen", "Helium", "Hydrogen"],
-        ["Which animal is called the ship of the desert?",
-         "Camel", "Horse", "Elephant", "Yak"],
-        ["What is the square root of 144?",
-         "12", "14", "11", "16"]
-      ],
-      medium: [
-        ["Which element has atomic number 6?",
-         "Carbon", "Oxygen", "Nitrogen", "Silicon"],
-        ["What is the SI unit of force?",
-         "Newton", "Joule", "Watt", "Pascal"],
-        ["Who developed the theory of general relativity?",
-         "Albert Einstein", "Isaac Newton",
-         "Galileo Galilei", "Nikola Tesla"],
-        ["Which organ produces insulin?",
-         "Pancreas", "Liver", "Kidney", "Heart"],
-        ["Which is the largest planet in our solar system?",
-         "Jupiter", "Saturn", "Neptune", "Earth"],
-        ["What is the currency of Japan?",
-         "Yen", "Won", "Yuan", "Ringgit"],
-        ["Which layer protects Earth from most UV radiation?",
-         "Ozone layer", "Troposphere", "Ionosphere", "Exosphere"],
-        ["Which country hosted the 2016 Summer Olympics?",
-         "Brazil", "Japan", "China", "United Kingdom"],
-        ["What is the speed of light approximately?",
-         "300,000 km/s", "30,000 km/s",
-         "3,000 km/s", "3,000,000 km/s"],
-        ["Which blood cells help fight infection?",
-         "White blood cells", "Red blood cells",
-         "Platelets", "Plasma"]
-      ],
-      hard: [
-        ["What is the approximate value of Avogadro's constant?",
-         "6.022 × 10²³", "9.81 × 10²³",
-         "3.14 × 10²³", "1.602 × 10²³"],
-        ["Which scientist proposed the uncertainty principle?",
-         "Werner Heisenberg", "Niels Bohr",
-         "Erwin Schrödinger", "Max Planck"],
-        ["What is the chemical symbol for tungsten?",
-         "W", "Tg", "Tu", "Ts"],
-        ["Which treaty ended World War I between Germany and the Allies?",
-         "Treaty of Versailles", "Treaty of Paris",
-         "Treaty of Rome", "Treaty of Vienna"],
-        ["Which moon is the largest in the solar system?",
-         "Ganymede", "Titan", "Europa", "Callisto"],
-        ["What is the pH of a neutral aqueous solution at 25°C?",
-         "7", "5", "8", "10"],
-        ["Which law relates pressure and volume at constant temperature?",
-         "Boyle's law", "Charles's law",
-         "Ohm's law", "Faraday's law"],
-        ["What is the SI unit of magnetic flux?",
-         "Weber", "Tesla", "Henry", "Ampere"],
-        ["Which part of the brain coordinates balance?",
-         "Cerebellum", "Medulla", "Thalamus", "Hypothalamus"],
-        ["Which mathematical constant is approximately 2.71828?",
-         "Euler's number e", "Pi",
-         "Golden ratio", "Square root of 2"]
-      ]
-    }
-  };
+const STORAGE_KEY = "quizlab_leaderboard_v2";
+const TIME_PER_QUESTION = 20;
 
-  const QUIZ_NAMES = {
-    programming: "Programming Basics",
-    general: "General Knowledge"
-  };
+let category = "programming";
+let difficulty = "easy";
+let player = "";
+let questions = [];
+let answers = [];
+let locked = [];
+let current = 0;
+let deadline = 0;
+let timerId = null;
+let finished = true;
 
-  const STORAGE_KEY = "quizlab_leaderboard_v1";
-  const QUESTION_TIME = 20;
+function el(id) {
+  return document.getElementById(id);
+}
 
-  let category = "programming";
-  let difficulty = "easy";
-  let player = "";
-  let questions = [];
-  let current = 0;
-  let answers = [];
-  let expired = [];
-  let remaining = QUESTION_TIME;
-  let deadline = 0;
-  let timerId = null;
-  let finished = false;
+function shuffle(items) {
+  const copy = [...items];
+  for(let i=copy.length-1;i>0;i--) {
+    const j=Math.floor(Math.random()*(i+1));
+    [copy[i],copy[j]]=[copy[j],copy[i]];
+  }
+  return copy;
+}
 
-  function el(id) {
-    return document.getElementById(id);
+function showSection(section) {
+  ["home","setup","quiz","results","leaderboard"].forEach(id=>{
+    el(id).classList.toggle("hidden",id!==section);
+  });
+  window.scrollTo(0,0);
+}
+
+function stopTimer() {
+  if(timerId!==null) {
+    clearInterval(timerId);
+    timerId=null;
+  }
+}
+
+function goHome() {
+  if(!finished && !el("quiz").classList.contains("hidden")) {
+    if(!confirm("Leave this quiz? Your attempt will be lost.")) return;
+  }
+  stopTimer();
+  finished=true;
+  showSection("home");
+}
+
+function openSetup(type) {
+  stopTimer();
+  category=type;
+  el("setupTitle").textContent=NAMES[type];
+  showSection("setup");
+}
+
+function startQuiz() {
+  player=el("playerName").value.trim();
+  if(!player) {
+    alert("Please enter your name.");
+    el("playerName").focus();
+    return;
   }
 
-  function shuffle(array) {
-    const result = [...array];
-    for (let i = result.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [result[i], result[j]] = [result[j], result[i]];
-    }
-    return result;
-  }
-
-  function escapeHTML(value) {
-    return String(value).replace(/[&<>"']/g, ch => ({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;"
-    })[ch]);
-  }
-
-  function showSection(id) {
-    ["home", "setup", "quiz", "results", "leaderboard"]
-      .forEach(section => {
-        el(section).classList.toggle("hidden", section !== id);
-      });
-
-    window.scrollTo(0, 0);
-  }
-
-  function stopTimer() {
-    if (timerId !== null) {
-      clearInterval(timerId);
-      timerId = null;
-    }
-  }
-
-  function showHome() {
-    if (!el("quiz").classList.contains("hidden") && !finished) {
-      if (!confirm("Leave the quiz? Your current attempt will be lost.")) {
-        return;
-      }
-    }
-
-    stopTimer();
-    finished = true;
-    showSection("home");
-  }
-
-  function openSetup(type) {
-    stopTimer();
-    category = type;
-    el("setupTitle").textContent = QUIZ_NAMES[type];
-    showSection("setup");
-  }
-
-  function startQuiz() {
-    player = el("playerName").value.trim();
-
-    if (!player) {
-      alert("Please enter your name.");
-      el("playerName").focus();
-      return;
-    }
-
-    difficulty = el("difficulty").value;
-
-    questions = shuffle(BANK[category][difficulty]).map(row => ({
-      text: row[0],
-      correct: row[1],
-      options: shuffle(row.slice(1))
-    }));
-
-    answers = Array(questions.length).fill(null);
-    expired = Array(questions.length).fill(false);
-
-    current = 0;
-    finished = false;
-
-    showSection("quiz");
-    displayQuestion();
-    startTimer();
-  }
-
-  function displayQuestion() {
-    const question = questions[current];
-
-    el("quizCategory").textContent =
-      QUIZ_NAMES[category] + " • " + difficulty.toUpperCase();
-
-    el("questionCount").textContent =
-      "Question " + (current + 1) + " of " + questions.length;
-
-    el("progressFill").style.width =
-      ((current + 1) / questions.length * 100) + "%";
-
-    el("questionText").textContent = question.text;
-
-    const optionsContainer = el("options");
-    optionsContainer.innerHTML = "";
-
-    question.options.forEach((option, index) => {
-      const button = document.createElement("button");
-      button.className = "option";
-
-      if (answers[current] === option) {
-        button.classList.add("selected");
-      }
-
-      button.textContent =
-        String.fromCharCode(65 + index) + ". " + option;
-
-      button.disabled = expired[current];
-
-      button.onclick = () => selectAnswer(option);
-
-      optionsContainer.appendChild(button);
-    });
-
-    el("prevBtn").disabled = current === 0;
-
-    el("nextBtn").textContent =
-      current === questions.length - 1
-        ? "Submit Quiz"
-        : "Next →";
-
-    renderNavigator();
-  }
-
-  function selectAnswer(option) {
-    if (finished || expired[current]) return;
-
-    answers[current] = option;
-    displayQuestion();
-  }
-
-  function renderNavigator() {
-    const navigator = el("navigator");
-    navigator.innerHTML = "";
-
-    questions.forEach((_, index) => {
-      const button = document.createElement("button");
-      button.textContent = index + 1;
-      button.className = "nav-number";
-
-      if (expired[index]) {
-        button.classList.add("locked");
-      } else if (answers[index] !== null) {
-        button.classList.add("answered");
-      }
-
-      if (index === current) {
-        button.classList.add("current");
-      }
-
-      button.onclick = () => navigateTo(index);
-      navigator.appendChild(button);
-    });
-
-    const answered = answers.filter(a => a !== null).length;
-    el("answeredCount").textContent =
-      answered + " of " + questions.length + " answered";
-  }
-
-  function startTimer() {
-    stopTimer();
-
-    remaining = QUESTION_TIME;
-    deadline = Date.now() + QUESTION_TIME * 1000;
-
-    updateTimerDisplay();
-
-    timerId = setInterval(() => {
-      remaining = Math.max(
-        0,
-        Math.ceil((deadline - Date.now()) / 1000)
-      );
-
-      updateTimerDisplay();
-
-      if (remaining === 0) {
-        stopTimer();
-        expired[current] = true;
-
-        if (current === questions.length - 1) {
-          submitQuiz();
-        } else {
-          current++;
-          displayQuestion();
-          startTimer();
-        }
-      }
-    }, 200);
-  }
-
-  function updateTimerDisplay() {
-    el("timer").textContent =
-      "00:" + String(remaining).padStart(2, "0");
-
-    el("timer").classList.toggle("danger", remaining <= 5);
-  }
-
-  function navigateTo(index) {
-    if (finished || index === current) return;
-
-    // Leaving a question locks it, so users cannot
-    // reset its countdown by revisiting it.
-    expired[current] = true;
-
-    stopTimer();
-    current = index;
-    displayQuestion();
-
-    if (expired[current]) {
-      el("timer").textContent = "Locked";
-      el("timer").classList.add("danger");
-    } else {
-      startTimer();
-    }
-  }
-
-  function previousQuestion() {
-    if (current > 0) {
-      navigateTo(current - 1);
-    }
-  }
-
-  function nextQuestion() {
-    if (current === questions.length - 1) {
-      confirmSubmit();
-    } else {
-      navigateTo(current + 1);
-    }
-  }
-
-  function confirmSubmit() {
-    if (finished) return;
-
-    if (confirm("Are you sure you want to submit your quiz?")) {
-      submitQuiz();
-    }
-  }
-
-  function submitQuiz() {
-    if (finished) return;
-
-    finished = true;
-    stopTimer();
-
-    let correct = 0;
-    let wrong = 0;
-    let skipped = 0;
-
-    questions.forEach((question, index) => {
-      if (answers[index] === null) {
-        skipped++;
-      } else if (answers[index] === question.correct) {
-        correct++;
-      } else {
-        wrong++;
-      }
-    });
-
-    const score = correct * 4 - wrong;
-    const maxScore = questions.length * 4;
-    const accuracy = Math.round(correct / questions.length * 100);
-
-    el("resultName").textContent = player;
-    el("finalScore").textContent = score + " / " + maxScore;
-    el("resultDetails").textContent =
-      QUIZ_NAMES[category] + " • " +
-      difficulty.toUpperCase() + " • " +
-      accuracy + "% accuracy";
-
-    el("correctCount").textContent = correct;
-    el("wrongCount").textContent = wrong;
-    el("skippedCount").textContent = skipped;
-
-    renderReview();
-    saveScore({
-      name: player,
-      category: QUIZ_NAMES[category],
-      difficulty,
-      score,
-      accuracy,
-      date: new Date().toLocaleDateString()
-    });
-
-    showSection("results");
-  }
-
-  function renderReview() {
-    const container = el("reviewContainer");
-    container.innerHTML = "";
-
-    questions.forEach((question, index) => {
-      const answer = answers[index];
-      const isCorrect = answer === question.correct;
-
-      const item = document.createElement("div");
-      item.className = "review-item";
-
-      const heading = document.createElement("strong");
-      heading.textContent =
-        (index + 1) + ". " + question.text;
-
-      const yourAnswer = document.createElement("p");
-      yourAnswer.textContent =
-        "Your answer: " + (answer ?? "Not answered");
-
-      yourAnswer.className =
-        answer === null ? "muted" :
-        isCorrect ? "correct" : "wrong";
-
-      const correctAnswer = document.createElement("p");
-      correctAnswer.textContent =
-        "Correct answer: " + question.correct;
-      correctAnswer.className = "correct";
-
-      item.append(heading, yourAnswer, correctAnswer);
-      container.appendChild(item);
-    });
-  }
-
-  function restartQuiz() {
-    openSetup(category);
-  }
-
-  function getScores() {
-    try {
-      const data = JSON.parse(
-        localStorage.getItem(STORAGE_KEY) || "[]"
-      );
-      return Array.isArray(data) ? data : [];
-    } catch {
-      return [];
-    }
-  }
-
-  function saveScore(entry) {
-    try {
-      const scores = getScores();
-      scores.push(entry);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(scores));
-    } catch (error) {
-      console.warn("Could not save leaderboard:", error);
-    }
-  }
-
-  function showLeaderboard() {
-    stopTimer();
-
-    if (!el("quiz").classList.contains("hidden") && !finished) {
-      if (!confirm("Leave the quiz? Your attempt will be lost.")) {
-        startTimer();
-        return;
-      }
-    }
-
-    finished = true;
-
-    const scores = getScores().sort(
-      (a, b) => b.score - a.score ||
-                b.accuracy - a.accuracy
+  difficulty=el("difficulty").value;
+  questions=shuffle(BANK[category][difficulty]).map(row=>({
+    text:row[0],
+    correct:row[1],
+    options:shuffle(row.slice(1))
+  }));
+
+  answers=Array(questions.length).fill(null);
+  locked=Array(questions.length).fill(false);
+  current=0;
+  finished=false;
+
+  showSection("quiz");
+  renderQuestion();
+  startTimer();
+}
+
+function renderQuestion() {
+  const q=questions[current];
+
+  el("quizCategory").textContent=
+    NAMES[category]+" • "+difficulty.toUpperCase();
+
+  el("questionCount").textContent=
+    "Question "+(current+1)+" of "+questions.length;
+
+  el("progressFill").style.width=
+    ((current+1)/questions.length*100)+"%";
+
+  el("questionText").textContent=q.text;
+
+  const container=el("options");
+  container.innerHTML="";
+
+  q.options.forEach((option,index)=>{
+    const button=document.createElement("button");
+    button.className="option";
+    button.textContent=
+      String.fromCharCode(65+index)+". "+option;
+
+    if(answers[current]===option)
+      button.classList.add("selected");
+
+    button.disabled=locked[current];
+    button.onclick=()=>selectAnswer(option);
+    container.appendChild(button);
+  });
+
+  el("prevBtn").disabled=current===0;
+  el("nextBtn").textContent=
+    current===questions.length-1?"Submit Quiz":"Next →";
+
+  renderNavigator();
+}
+
+function selectAnswer(option) {
+  if(finished || locked[current]) return;
+  answers[current]=option;
+  renderQuestion();
+}
+
+function renderNavigator() {
+  const container=el("navigator");
+  container.innerHTML="";
+
+  questions.forEach((q,index)=>{
+    const button=document.createElement("button");
+    button.className="nav-number";
+    button.textContent=index+1;
+
+    if(locked[index]) button.classList.add("locked");
+    else if(answers[index]!==null)
+      button.classList.add("answered");
+
+    if(index===current) button.classList.add("current");
+
+    button.onclick=()=>navigateTo(index);
+    container.appendChild(button);
+  });
+
+  el("answeredCount").textContent=
+    answers.filter(a=>a!==null).length+
+    " of "+questions.length+" answered";
+}
+
+function startTimer() {
+  stopTimer();
+  deadline=Date.now()+TIME_PER_QUESTION*1000;
+  updateTimer();
+
+  timerId=setInterval(()=>{
+    if(finished) return;
+
+    const remaining=Math.max(
+      0,Math.ceil((deadline-Date.now())/1000)
     );
 
-    const body = el("leaderboardBody");
-    body.innerHTML = "";
+    el("timer").textContent=
+      "00:"+String(remaining).padStart(2,"0");
 
-    if (scores.length === 0) {
-      const row = document.createElement("tr");
-      const cell = document.createElement("td");
-      cell.colSpan = 6;
-      cell.textContent = "No scores yet. Play a quiz first!";
-      row.appendChild(cell);
-      body.appendChild(row);
-    } else {
-      scores.forEach((entry, index) => {
-        const row = document.createElement("tr");
+    el("timer").classList.toggle("danger",remaining<=5);
 
-        [
-          index + 1,
-          entry.name,
-          entry.category,
-          entry.difficulty,
-          entry.score,
-          entry.date
-        ].forEach(value => {
-          const cell = document.createElement("td");
-          cell.textContent = value;
-          row.appendChild(cell);
-        });
+    if(remaining===0) {
+      stopTimer();
+      locked[current]=true;
 
-        body.appendChild(row);
-      });
+      if(current===questions.length-1) {
+        submitQuiz();
+      } else {
+        current++;
+        renderQuestion();
+        startTimer();
+      }
     }
+  },200);
+}
 
-    showSection("leaderboard");
+function updateTimer() {
+  el("timer").textContent="00:20";
+  el("timer").classList.remove("danger");
+}
+
+function navigateTo(index) {
+  if(finished || index===current) return;
+
+  locked[current]=true;
+  stopTimer();
+  current=index;
+  renderQuestion();
+
+  if(locked[current]) {
+    el("timer").textContent="Locked";
+    el("timer").classList.add("danger");
+  } else {
+    startTimer();
+  }
+}
+
+function previousQuestion() {
+  if(current>0) navigateTo(current-1);
+}
+
+function nextQuestion() {
+  if(current===questions.length-1) {
+    confirmSubmit();
+  } else {
+    navigateTo(current+1);
+  }
+}
+
+function confirmSubmit() {
+  if(!finished && confirm("Submit your quiz now?")) {
+    submitQuiz();
+  }
+}
+
+function submitQuiz() {
+  if(finished) return;
+  finished=true;
+  stopTimer();
+
+  let correct=0,wrong=0,skipped=0;
+
+  questions.forEach((q,i)=>{
+    if(answers[i]===null) skipped++;
+    else if(answers[i]===q.correct) correct++;
+    else wrong++;
+  });
+
+  const score=correct*4-wrong;
+  const maxScore=questions.length*4;
+  const accuracy=Math.round(correct/questions.length*100);
+
+  el("resultName").textContent=player;
+  el("finalScore").textContent=score+" / "+maxScore;
+  el("resultDetails").textContent=
+    NAMES[category]+" • "+difficulty.toUpperCase()+
+    " • "+accuracy+"% accuracy";
+
+  el("correctCount").textContent=correct;
+  el("wrongCount").textContent=wrong;
+  el("skippedCount").textContent=skipped;
+
+  renderReview();
+  saveScore({
+    name:player,
+    category:NAMES[category],
+    difficulty,
+    score,
+    accuracy,
+    date:new Date().toLocaleDateString()
+  });
+
+  showSection("results");
+}
+
+function renderReview() {
+  const container=el("reviewContainer");
+  container.innerHTML="";
+
+  questions.forEach((q,i)=>{
+    const item=document.createElement("div");
+    item.className="review-item";
+
+    const heading=document.createElement("strong");
+    heading.textContent=(i+1)+". "+q.text;
+
+    const answer=document.createElement("p");
+    answer.textContent="Your answer: "+(answers[i]??"Not answered");
+    answer.className=answers[i]===null?"muted":
+      answers[i]===q.correct?"correct":"wrong";
+
+    const correct=document.createElement("p");
+    correct.textContent="Correct answer: "+q.correct;
+    correct.className="correct";
+
+    item.append(heading,answer,correct);
+    container.appendChild(item);
+  });
+}
+
+function restartQuiz() {
+  openSetup(category);
+}
+
+function getScores() {
+  try {
+    const data=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
+    return Array.isArray(data)?data:[];
+  } catch {
+    return [];
+  }
+}
+
+function saveScore(entry) {
+  try {
+    const scores=getScores();
+    scores.push(entry);
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(scores));
+  } catch(error) {
+    console.warn("Leaderboard storage unavailable:",error);
+  }
+}
+
+function showLeaderboard() {
+  if(!finished && !el("quiz").classList.contains("hidden")) {
+    if(!confirm("Leave quiz? Your attempt will be lost.")) return;
   }
 
-  showHome();
+  stopTimer();
+  finished=true;
+
+  const scores=getScores().sort(
+    (a,b)=>b.score-a.score||b.accuracy-a.accuracy
+  );
+
+  const body=el("leaderboardBody");
+  body.innerHTML="";
+
+  if(scores.length===0) {
+    const row=document.createElement("tr");
+    const cell=document.createElement("td");
+    cell.colSpan=6;
+    cell.textContent="No scores yet. Take a quiz first!";
+    row.appendChild(cell);
+    body.appendChild(row);
+  } else {
+    scores.forEach((entry,index)=>{
+      const row=document.createElement("tr");
+      [
+        index+1,
+        entry.name,
+        entry.category,
+        entry.difficulty,
+        entry.score,
+        entry.date
+      ].forEach(value=>{
+        const cell=document.createElement("td");
+        cell.textContent=value;
+        row.appendChild(cell);
+      });
+      body.appendChild(row);
+    });
+  }
+
+  showSection("leaderboard");
+}
+
+goHome();
 </script>
 </body>
 </html>
