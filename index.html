@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuizLab | Test Your Knowledge</title>
+<style>
+*{box-sizing:border-box}
+:root{--purple:#6755e8;--ink:#172033;--muted:#737d90;--line:#e7eaf1}
+body{margin:0;background:#f7f8fc;color:var(--ink);font-family:Arial,sans-serif}
+header{height:72px;background:white;border-bottom:1px solid var(--line);padding:0 max(22px,calc((100% - 1000px)/2));display:flex;align-items:center;justify-content:space-between}
+.brand{font-size:22px;font-weight:800;letter-spacing:-1px}
+.logo{display:inline-grid;place-items:center;background:var(--purple);color:white;width:34px;height:34px;border-radius:10px;margin-right:8px}
+header small{color:var(--muted)}
+main{max-width:1000px;margin:auto;padding:48px 20px 60px;min-height:80vh}
+.hero{text-align:center;margin:10px auto 52px;max-width:650px}
+.eyebrow{font-size:11px;letter-spacing:2px;color:var(--purple);font-weight:bold}
+h1,h2,h3{letter-spacing:-.7px}
+.hero h1{font-size:clamp(36px,6vw,54px);margin:15px 0}
+.hero h1 span{color:var(--purple)}
+.hero p:last-child{color:var(--muted);line-height:1.7}
+.heading{display:flex;align-items:end;justify-content:space-between;margin-bottom:20px}
+.heading h2{margin:0;font-size:27px}
+.muted{color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.card,.question-card,.result-box,.review{background:white;border:1px solid var(--line);border-radius:19px;padding:24px}
+.card{transition:.2s}
+.card:hover{transform:translateY(-3px);box-shadow:0 12px 30px #2020400d}
+.art{height:115px;border-radius:14px;display:grid;place-items:center;font-size:46px;margin-bottom:20px}
+.purple{background:linear-gradient(135deg,#eeebff,#dcd6ff)}
+.orange{background:linear-gradient(135deg,#fff1df,#ffe0bd)}
+.card h3{font-size:21px;margin:0 0 10px}
+.card p{font-size:14px;color:var(--muted);line-height:1.6;min-height:45px}
+.card-bottom{border-top:1px solid var(--line);padding-top:16px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:12px 16px;font-size:13px;font-weight:bold}
+.primary{background:var(--purple);color:white}
+.primary:hover{background:#5140cf}
+.secondary{background:#f0f1f7;color:var(--ink)}
+button:disabled{opacity:.4;cursor:not-allowed}
+.screen{animation:fade .2s ease}
+@keyframes fade{from{opacity:.5;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.hidden{display:none!important}
+.back{background:transparent;color:var(--muted);padding:0;margin-bottom:25px}
+.quiz-heading{display:flex;justify-content:space-between;align-items:end;gap:12px}
+.quiz-heading h1{font-size:35px;margin:8px 0 20px}
+.progress{height:7px;background:#e7e7f2;border-radius:20px;overflow:hidden;margin-bottom:24px}
+#progressFill{height:100%;width:0;background:var(--purple);transition:width .2s}
+.question-card{padding:clamp(20px,5vw,38px);box-shadow:0 12px 32px #2020400a}
+.meta{display:flex;justify-content:space-between;gap:10px;margin-bottom:22px}
+.pill{background:#f0eeff;color:var(--purple);padding:7px 10px;border-radius:7px;font-size:10px;font-weight:bold;letter-spacing:1px}
+#questionText{font-size:25px;line-height:1.45;margin:0 0 24px}
+.options{display:grid;gap:12px}
+.option{display:flex;align-items:center;gap:13px;text-align:left;background:white;border:1px solid var(--line);padding:13px;border-radius:12px;color:var(--ink);font-size:14px}
+.option:hover{border-color:#a69bfa}
+.option.selected{border:1.5px solid var(--purple);background:#f0eeff}
+.letter{display:grid;place-items:center;width:30px;height:30px;flex-shrink:0;background:#f0f1f6;border-radius:8px;font-weight:bold}
+.selected .letter{background:var(--purple);color:white}
+.controls{display:flex;justify-content:space-between;gap:10px;margin-top:26px;padding-top:22px;border-top:1px solid var(--line)}
+.note{text-align:center;color:var(--muted);font-size:12px;margin-top:16px}
+.result-box{text-align:center;padding:32px 20px;box-shadow:0 12px 32px #2020400a}
+.check{margin:auto auto 18px;width:50px;height:50px;border-radius:16px;background:#e8f8f0;color:#16865b;display:grid;place-items:center;font-size:25px}
+.result-box h1{font-size:34px;margin:8px}
+.score{width:138px;height:138px;border:8px solid #f0eeff;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:25px auto}
+.score strong{font-size:30px}
+.score span{font-size:10px;color:var(--muted);margin-top:5px;font-weight:bold}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:570px;margin:20px auto 0}
+.stat{background:#fafbfe;border-radius:12px;padding:17px 5px;color:var(--muted);font-size:12px}
+.stat strong{display:block;color:var(--ink);font-size:24px;margin:7px}
+.review-list{display:grid;gap:12px;margin-top:18px}
+.review{padding:19px;border-left:4px solid #c84d5a;overflow-wrap:anywhere}
+.review.good{border-left-color:#16865b}
+.review p{font-size:13px;line-height:1.6;margin:8px 0}
+.good-text{color:#16865b}.bad-text{color:#c84d5a}
+.actions{display:flex;justify-content:center;gap:12px;margin-top:24px}
+footer{padding:22px max(22px,calc((100% - 1000px)/2));background:white;border-top:1px solid var(--line);display:flex;justify-content:space-between;color:var(--muted);font-size:11px}
+@media(max-width:650px){
+header{padding:0 17px}header small{font-size:10px}
+main{padding:32px 14px}
+.grid{grid-template-columns:1fr}
+.card{padding:19px}.art{height:90px}
+.quiz-heading{align-items:start;flex-direction:column;gap:0}
+#questionText{font-size:21px}
+.question-card{padding:20px 15px}
+.controls{flex-wrap:wrap}
+.controls button{flex:1}
+.actions{flex-direction:column}
+.actions button{width:100%}
+footer{padding:18px;gap:12px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="logo">Q</span>QuizLab</div>
+  <small>Learn something new today</small>
+</header>
+
+<main>
+<section id="home" class="screen">
+  <div class="hero">
+    <div class="eyebrow">WELCOME TO QUIZLAB</div>
+    <h1>Challenge your <span>curiosity.</span></h1>
+    <p>Choose a quiz, trust what you know, and discover what you can learn next.</p>
+  </div>
+  <div class="heading">
+    <div><div class="eyebrow">YOUR NEXT CHALLENGE</div><h2>Choose a quiz</h2></div>
+    <span class="muted">2 quizzes available</span>
+  </div>
+  <div id="quizCards" class="grid"></div>
+</section>
+
+<section id="quiz" class="screen hidden">
+  <button class="back" onclick="goHome()">← All quizzes</button>
+  <div class="quiz-heading">
+    <div><div id="category" class="eyebrow"></div><h1 id="quizTitle"></h1></div>
+    <div id="count" class="muted"></div>
+  </div>
+  <div class="progress"><div id="progressFill"></div></div>
+  <div class="question-card">
+    <div class="meta"><span id="number" class="pill"></span><span id="status" class="muted"></span></div>
+    <h2 id="questionText"></h2>
+    <div id="options" class="options"></div>
+    <div class="controls">
+      <button id="prev" class="secondary" onclick="move(-1)">← Previous</button>
+      <button id="next" class="primary" onclick="move(1)">Next question →</button>
+      <button id="submit" class="primary hidden" onclick="finishQuiz()">Submit quiz</button>
+    </div>
+  </div>
+  <p class="note">Your selected answers are saved as you move between questions.</p>
+</section>
+
+<section id="results" class="screen hidden">
+  <div class="result-box">
+    <div class="check">✓</div>
+    <div class="eyebrow">QUIZ COMPLETED</div>
+    <h1 id="resultTitle">Nice work!</h1>
+    <p id="resultSubtitle" class="muted"></p>
+    <div class="score"><strong id="score"></strong><span>YOUR SCORE</span></div>
+    <div class="stats">
+      <div class="stat">●<strong id="correct">0</strong>Correct</div>
+      <div class="stat">●<strong id="incorrect">0</strong>Incorrect</div>
+      <div class="stat">●<strong id="percent">0%</strong>Percentage</div>
+    </div>
+  </div>
+  <div class="heading" style="margin-top:38px">
+    <div><div class="eyebrow">LEARN FROM YOUR ANSWERS</div><h2>Answer review</h2></div>
+  </div>
+  <div id="reviewList" class="review-list"></div>
+  <div class="actions">
+    <button class="secondary" onclick="startQuiz(active.id)">↻ Try again</button>
+    <button class="primary" onclick="goHome()">Choose another quiz</button>
+  </div>
+</section>
+</main>
+
+<footer><strong>QuizLab</strong><span>Built with HTML, CSS & JavaScript</span></footer>
+
+<script>
+const quizzes = [
+ {
+  id:"programming",title:"Programming Basics",category:"TECH & LOGIC",
+  description:"Test your understanding of programming fundamentals and computer science.",
+  icon:"💻",theme:"purple",
+  questions:[
+   ["Which of these is a programming language?",["HTML","Python","HTTP","JPEG"],1],
+   ["What does CPU stand for?",["Central Processing Unit","Computer Personal Utility","Core Program Upload","Central Print Unit"],0],
+   ["Which data type represents true or false?",["String","Integer","Boolean","Array"],2],
+   ["What is the purpose of a loop?",["Store a picture","Repeat instructions","Delete a program","Connect to Wi-Fi"],1],
+   ["Which symbol is commonly used for equality comparison in JavaScript?",["=","==","<-","=>="],1],
+   ["What is an array commonly used for?",["Storing a collection of values","Turning off a computer","Styling a webpage","Encrypting files automatically"],0],
+   ["Which one is a version-control system?",["Git","Figma","Chrome","Excel"],0],
+   ["What does debugging mean?",["Writing only comments","Finding and fixing errors","Making a screen brighter","Installing a keyboard"],1],
+   ["Which structure stores key-value pairs in JavaScript?",["Boolean","Object","Loop","Operator"],1],
+   ["What does HTML mainly define on a webpage?",["Structure and content","Server electricity","Computer RAM","Internet speed"],0]
+  ]
+ },
+ {
+  id:"general",title:"General Knowledge",category:"THE WORLD AROUND YOU",
+  description:"A quick mix of science, geography, space, and general facts.",
+  icon:"🌍",theme:"orange",
+  questions:[
+   ["What is the capital of India?",["Mumbai","New Delhi","Kolkata","Chennai"],1],
+   ["Which planet is known as the Red Planet?",["Venus","Jupiter","Mars","Mercury"],2],
+   ["What is the chemical symbol for water?",["CO₂","O₂","NaCl","H₂O"],3],
+   ["Which is the largest ocean on Earth?",["Atlantic Ocean","Indian Ocean","Pacific Ocean","Arctic Ocean"],2],
+   ["How many sides does a hexagon have?",["Five","Six","Seven","Eight"],1],
+   ["Which gas do plants absorb during photosynthesis?",["Oxygen","Carbon dioxide","Helium","Hydrogen"],1],
+   ["What is the closest star to Earth?",["Sirius","The Sun","Proxima Centauri","Polaris"],1],
+   ["Which instrument measures temperature?",["Barometer","Thermometer","Altimeter","Compass"],1],
+   ["On which continent is Brazil located?",["Africa","Europe","South America","Asia"],2],
+   ["What is the change from liquid to gas called?",["Freezing","Condensation","Evaporation","Melting"],2]
+  ]
+ }
+];
+
+let active=null,index=0,answers=[];
+
+function show(id){
+ document.querySelectorAll(".screen").forEach(s=>s.classList.add("hidden"));
+ document.getElementById(id).classList.remove("hidden");
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function drawCards(){
+ const box=document.getElementById("quizCards");
+ box.innerHTML="";
+ quizzes.forEach(q=>{
+  const card=document.createElement("article");
+  card.className="card";
+  card.innerHTML=`<div class="art ${q.theme}">${q.icon}</div>
+  <h3>${q.title}</h3><p>${q.description}</p>
+  <div class="card-bottom"><span class="muted">${q.questions.length} questions · Multiple choice</span>
+  <button class="primary">Start quiz →</button></div>`;
+  card.querySelector("button").onclick=()=>startQuiz(q.id);
+  box.appendChild(card);
+ });
+}
+
+function startQuiz(id){
+ active=quizzes.find(q=>q.id===id);
+ index=0;answers=Array(active.questions.length).fill(null);
+ document.getElementById("category").textContent=active.category;
+ document.getElementById("quizTitle").textContent=active.title;
+ show("quiz");drawQuestion();
+}
+
+function drawQuestion(){
+ const q=active.questions[index];
+ document.getElementById("count").textContent=`Question ${index+1} of ${active.questions.length}`;
+ document.getElementById("number").textContent=`QUESTION ${String(index+1).padStart(2,"0")}`;
+ document.getElementById("questionText").textContent=q[0];
+ document.getElementById("status").textContent=answers[index]===null?"Not answered":"Answer selected";
+ document.getElementById("progressFill").style.width=`${(index+1)/active.questions.length*100}%`;
+ const box=document.getElementById("options");box.innerHTML="";
+ q[1].forEach((option,i)=>{
+  const b=document.createElement("button");
+  b.className="option"+(answers[index]===i?" selected":"");
+  const letter=document.createElement("span");letter.className="letter";
+  letter.textContent=String.fromCharCode(65+i);
+  const text=document.createElement("span");text.textContent=option;
+  b.append(letter,text);
+  b.setAttribute("aria-pressed",String(answers[index]===i));
+  b.onclick=()=>{answers[index]=i;drawQuestion();};
+  box.appendChild(b);
+ });
+ document.getElementById("prev").disabled=index===0;
+ document.getElementById("next").classList.toggle("hidden",index===active.questions.length-1);
+ document.getElementById("submit").classList.toggle("hidden",index!==active.questions.length-1);
+}
+
+function move(direction){
+ index+=direction;
+ if(index>=0&&index<active.questions.length)drawQuestion();
+}
+
+function finishQuiz(){
+ const unanswered=answers.filter(a=>a===null).length;
+ if(unanswered>0&&!confirm(`You have ${unanswered} unanswered question(s). Submit anyway?`))return;
+ let correct=0;
+ active.questions.forEach((q,i)=>{if(answers[i]===q[2])correct++;});
+ const total=active.questions.length,wrong=total-correct,pct=Math.round(correct/total*100);
+ document.getElementById("score").textContent=`${correct}/${total}`;
+ document.getElementById("correct").textContent=correct;
+ document.getElementById("incorrect").textContent=wrong;
+ document.getElementById("percent").textContent=pct+"%";
+ document.getElementById("resultTitle").textContent=pct===100?"Perfect score!":pct>=70?"Nice work!":pct>=40?"Keep it up!":"Keep practising!";
+ document.getElementById("resultSubtitle").textContent=`You completed ${active.title}. Review your answers below.`;
+ const list=document.getElementById("reviewList");list.innerHTML="";
+ active.questions.forEach((q,i)=>{
+  const good=answers[i]===q[2];
+  const item=document.createElement("article");
+  item.className="review "+(good?"good":"");
+  const question=document.createElement("p");question.innerHTML=`<strong>${i+1}. ${escapeText(q[0])}</strong>`;
+  const your=document.createElement("p");your.className=good?"good-text":"bad-text";
+  your.textContent="Your answer: "+(answers[i]===null?"Not answered":q[1][answers[i]]);
+  item.append(question,your);
+  if(!good){
+   const right=document.createElement("p");right.className="good-text";
+   right.textContent="Correct answer: "+q[1][q[2]];item.appendChild(right);
+  }
+  list.appendChild(item);
+ });
+ show("results");
+}
+
+function escapeText(s){
+ return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+function goHome(){show("home");}
+drawCards();
+</script>
+</body>
+</html>
